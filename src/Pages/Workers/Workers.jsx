@@ -93,7 +93,7 @@ const Workers = () => {
     setModalInsert(!modalInsert);
   }
 
-  const seleccionarConsola=(item, situation)=>{
+  const What=(item, situation)=>{
     setWorker(item);
     (situation==='Edit')?ModalWindowEdit():ModalWindowAdd()
   }
@@ -164,7 +164,7 @@ const Workers = () => {
                <TableCell>
                <Link to={'/worker/'+item.worker_id}><Add className={styles.iconos}/></Link>
                  &nbsp;&nbsp;&nbsp;&nbsp;
-               <Edit className={styles.iconos} onClick={()=>seleccionarConsola(item, 'Edit')}/>
+               <Edit className={styles.iconos} onClick={()=>What(item, 'Edit')}/>
                </TableCell>
              </TableRow>
            ))}

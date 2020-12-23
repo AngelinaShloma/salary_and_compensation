@@ -28,7 +28,10 @@ const Debts = () =>  {
   }));
 
   const styles= useStyles();
-  const [data, setData]=useState([]);
+  const [data, setData] = useState([]);
+  const [sum, setSum] = useState([]);
+  const [Inc, setInc] = useState([]);
+  const [Pay, setPay] = useState([]);
   const [modalInsert, setModalInsert]=useState(false);
 
   let history = useHistory();
@@ -51,7 +54,14 @@ const Debts = () =>  {
   const queryGet=async()=>{
     await axios.get("https://vb6th073kf.execute-api.us-east-1.amazonaws.com/dev/accountants/1/workers/"+id)
     .then(response=>{
-      setData(response.data)
+      console.log(response.data.debts);
+      console.log(response.data.total_increase_sum);
+      console.log(response.data.total_sum);
+      console.log(response.data.total_payout);
+      setData(response.data.debts);
+      setInc(response.data.total_increase_sum);
+      setSum(response.data.total_sum);
+      setPay(response.data.total_payout);
     })
   }
 
@@ -109,7 +119,7 @@ const Debts = () =>  {
   )
   useEffect(async()=>{
     await queryGet();
-  },[])
+  },[id])
 
   return(
     <div className="App">
@@ -121,24 +131,51 @@ const Debts = () =>  {
          <TableHead>
            <TableRow>
              <TableCell>Задолженность, руб.</TableCell>
-             <TableCell>Период просрочки
+             <TableCell>
+               <Table>
+                <TableHead>
                  <TableRow>
-                    <TableCell>с</TableCell>
-                    <TableCell>по</TableCell>
-                    <TableCell>дни</TableCell>
+                 <TableCell>Период задолженности</TableCell>
                 </TableRow>
-             </TableCell>
-             <TableCell>Оплата
+                </TableHead>
+                <TableBody>
                 <TableRow>
-                    <TableCell>сумма, руб.</TableCell>
-                    <TableCell>дата</TableCell>
+                  <TableCell>с</TableCell>
+                  <TableCell>по</TableCell>
+                  <TableCell>дни</TableCell>
                 </TableRow>
+                </TableBody>
+               </Table>
              </TableCell>
-             <TableCell>Увеличение долга
-                <TableRow>
-                    <TableCell>сумма, руб.</TableCell>
-                    <TableCell>дата</TableCell>
+             <TableCell>
+               <Table>
+                 <TableHead>
+                 <TableRow>
+                 <TableCell>Оплата</TableCell>
                 </TableRow>
+                </TableHead>
+                <TableBody>
+                <TableRow>
+                  <TableCell>сумма, руб.</TableCell>
+                  <TableCell>дата</TableCell>
+                </TableRow>
+                </TableBody>
+               </Table>
+             </TableCell>
+             <TableCell>
+               <Table>
+                 <TableHead>
+                 <TableRow>
+                 <TableCell>Увеличение долга</TableCell>
+                </TableRow>
+                </TableHead>
+                <TableBody>
+                <TableRow>
+                  <TableCell>сумма, руб.</TableCell>
+                  <TableCell>дата</TableCell>
+                </TableRow>
+                </TableBody>
+               </Table>
              </TableCell>
              <TableCell>Процентная ставка</TableCell>
              <TableCell>Дней в году</TableCell>
@@ -150,24 +187,36 @@ const Debts = () =>  {
              <TableRow key={item.debt_id}>
                <TableCell>{item.debt}</TableCell>
                <TableCell>
-               <TableRow>
-                    <TableCell>{item.period_start}</TableCell>
-                    <TableCell>{item.period_end}</TableCell>
-                    <TableCell>{item.delay_period}</TableCell>
+               <Table>
+                 <TableBody>
+                <TableRow>
+                  <TableCell>{item.period_start}</TableCell>
+                  <TableCell>{item.period_end}</TableCell>
+                  <TableCell>{item.delay_period}</TableCell>
                 </TableRow>
-               </TableCell>
+                </TableBody>
+               </Table>
+             </TableCell>
                <TableCell>
-               <TableRow>
-                    <TableCell>{item.payout_sum}</TableCell>
-                    <TableCell>{item.payout_date}</TableCell>
+               <Table>
+                 <TableBody>
+                <TableRow>
+                  <TableCell>{item.payout_sum}</TableCell>
+                  <TableCell>{item.payout_date}</TableCell>
                 </TableRow>
-               </TableCell>
+                </TableBody>
+               </Table>
+             </TableCell>
                <TableCell>
-               <TableRow>
-                    <TableCell>{item.debt_increase_sum}</TableCell>
-                    <TableCell>{item.debt_increase_date}</TableCell>
+               <Table>
+               <TableBody>
+                <TableRow>
+                  <TableCell>{item.debt_increase_sum}</TableCell>
+                  <TableCell>{item.debt_increase_date}</TableCell>
                 </TableRow>
-               </TableCell>
+                </TableBody>
+               </Table>
+             </TableCell>
                <TableCell>{item.interest_rate}</TableCell>
                <TableCell>{item.days_in_year}</TableCell>
                <TableCell>{item.percentage}</TableCell>
@@ -176,28 +225,40 @@ const Debts = () =>  {
            <TableRow>
            <TableCell></TableCell>
                <TableCell>
-               <TableRow>
-                    <TableCell></TableCell>
-                    <TableCell>Итого</TableCell>
-                    <TableCell>дни</TableCell>
+               <Table>
+                 <TableBody>
+                <TableRow>
+                  <TableCell></TableCell>
+                  <TableCell></TableCell>
+                  <TableCell>Итого</TableCell>
                 </TableRow>
-               </TableCell>
+                </TableBody>
+               </Table>
+             </TableCell>
                <TableCell>
-               <TableRow>
-                    <TableCell>сумма</TableCell>
-                    <TableCell></TableCell>
+               <Table>
+                 <TableBody>
+                <TableRow>
+                  <TableCell>{Pay}</TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
-               </TableCell>
+                </TableBody>
+               </Table>
+             </TableCell>
                <TableCell>
-               <TableRow>
-                    <TableCell>сумма</TableCell>
-                    <TableCell></TableCell>
+               <Table>
+               <TableBody>
+                <TableRow>
+                  <TableCell>{Inc}</TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
-               </TableCell>
+                </TableBody>
+               </Table>
+             </TableCell>
                <TableCell></TableCell>
                <TableCell></TableCell>
-               <TableCell>проценты</TableCell>
-           </TableRow>
+               <TableCell>{Number(sum).toFixed(2)}</TableCell>
+             </TableRow>
          </TableBody>
        </Table>
      </TableContainer>
