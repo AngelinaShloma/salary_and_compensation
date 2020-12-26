@@ -5,6 +5,7 @@ import {Table, TableContainer, TableHead, TableCell, TableBody, TableRow, Modal,
 import {makeStyles} from '@material-ui/core/styles';
 import {Add, Edit} from '@material-ui/icons';
 import {Link} from 'react-router-dom';
+import Header from '../../Header'
 
 const Workers = () => {
 
@@ -41,10 +42,18 @@ const Workers = () => {
   })
 
   const queryGet=async()=>{
+    try{
     await axios.get("https://vb6th073kf.execute-api.us-east-1.amazonaws.com/dev/accountants/1/workers")
     .then(response=>{
+      if(response.data === "Нет работников"){
+        alert("Нет работников")
+      } else {
       setData(response.data)
+      }
     })
+  } catch(err){
+    alert(err)
+  }
   }
 
   const handleChange=e=>{
@@ -57,16 +66,30 @@ const Workers = () => {
   }
 
   const queryPost=async()=>{
+    try{
     await axios.post("https://vb6th073kf.execute-api.us-east-1.amazonaws.com/dev/accountants/1/workers", worker)
     .then(response=>{
+      if (response.data === "Такой работник уже существует"){
+        alert("Такой работник уже существует")
+        ModalWindowInsert()
+      } else {
       setData(data.concat(response.data))
       ModalWindowInsert()
+      }
     })
+  } catch(err){
+    alert(err)
+  }
   }
 
   const queryPut=async()=>{
+    try{
     await axios.put("https://vb6th073kf.execute-api.us-east-1.amazonaws.com/dev/accountants/1/workers/"+worker.worker_id, worker)
     .then(response=>{
+      if (response.data === "Не удалось обновить запись о сотруднике"){
+        alert("Не удалось обновить запись о сотруднике")
+        ModalWindowEdit();
+      } else {
       var dataNew=data;
       dataNew.map(item=>{
         if(worker.worker_id===item.worker_id){
@@ -78,15 +101,15 @@ const Workers = () => {
       })
       setData(dataNew);
       ModalWindowEdit();
+    }
     })
+  } catch(err){
+    alert(err)
+  }
   }
 
   const ModalWindowEdit=()=>{
     setModalEdit(!modalEdit);
-  }
-
-  const ModalWindowAdd=()=>{
-    setModalAdd(!modalAdd);
   }
 
   const ModalWindowInsert=()=>{
@@ -95,8 +118,11 @@ const Workers = () => {
 
   const What=(item, situation)=>{
     setWorker(item);
-    (situation==='Edit')?ModalWindowEdit():ModalWindowAdd()
+    if (situation==='Edit'){
+      ModalWindowEdit()
+    }
   }
+
 
   const bodyInsert=(
     <div className={styles.modal}>
@@ -136,12 +162,13 @@ const Workers = () => {
 
   useEffect(async()=>{
     await queryGet();
-  },[])
+  },[1])
 
   return(
     <div className="Workers">
+      <Header />
        <br />
-       <Button onClick={()=>ModalWindowInsert()}>Новый сотрудник</Button>
+       <Button variant="contained" color="primary" onClick={()=>ModalWindowInsert()}>Новый сотрудник</Button>
       <br /><br />
      <TableContainer>
        <Table>
@@ -162,7 +189,7 @@ const Workers = () => {
                <TableCell>{item.patronimic_name}</TableCell>
                <TableCell>{item.e_mail}</TableCell>
                <TableCell>
-               <Link to={'/worker/'+item.worker_id}><Add className={styles.iconos}/></Link>
+               <Link to={'/accountant/1/worker/'+item.worker_id} color="inherit"><Add className={styles.iconos}/></Link>
                  &nbsp;&nbsp;&nbsp;&nbsp;
                <Edit className={styles.iconos} onClick={()=>What(item, 'Edit')}/>
                </TableCell>

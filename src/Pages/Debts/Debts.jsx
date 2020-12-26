@@ -4,7 +4,7 @@ import axios from 'axios';
 import {Table, TableContainer, TableHead, TableCell, TableBody, TableRow, Modal, Button, TextField} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import { useHistory, useParams } from 'react-router-dom';
-
+import Header from '../../Header'
 
 const Debts = () =>  {
 
@@ -47,13 +47,16 @@ const Debts = () =>  {
     debt_increase_sum: '',
     debt_increase_date: '',
     interest_rate: '',
-    days_in_year: '',
-    percentage: ''
+    days_in_year: ''
   })
 
   const queryGet=async()=>{
+    try{
     await axios.get("https://vb6th073kf.execute-api.us-east-1.amazonaws.com/dev/accountants/1/workers/"+id)
-    .then(response=>{
+    .then((response)=>{
+      if (response.data === "Нет записей о задолженностях") {
+        alert("Нет записей о задолженностях");
+      } else {
       console.log(response.data.debts);
       console.log(response.data.total_increase_sum);
       console.log(response.data.total_sum);
@@ -62,7 +65,11 @@ const Debts = () =>  {
       setInc(response.data.total_increase_sum);
       setSum(response.data.total_sum);
       setPay(response.data.total_payout);
+      }
     })
+    } catch (err) {
+      alert(err)
+    }
   }
 
   const handleChange=e=>{
@@ -75,11 +82,25 @@ const Debts = () =>  {
   }
 
   const queryPost=async()=>{
+    try{
     await axios.post("https://vb6th073kf.execute-api.us-east-1.amazonaws.com/dev/accountants/1/workers/"+id, worker_debt)
     .then(response=>{
+      if (response.data === "Previous debt is not found"){
+        if (response.data === "???"){
+          alert("Не удалось добавить запись")
+          ModalWindowInsert()
+        } else {setData(data.concat(response.data))
+          ModalWindowInsert()
+          console.log(response.data)}
+      } else  {
       setData(data.concat(response.data))
       ModalWindowInsert()
+      console.log(response.data)
+      }
     })
+    } catch(err){
+      alert(err)
+    }
   }
 
   
@@ -123,8 +144,9 @@ const Debts = () =>  {
 
   return(
     <div className="App">
+      <Header />
        <br />
-       <Button onClick={()=>ModalWindowInsert()}>Новая запись</Button>
+       <Button variant="contained" color="primary" onClick={()=>ModalWindowInsert()}>Новая запись</Button>
       <br /><br />
      <TableContainer>
        <Table>
